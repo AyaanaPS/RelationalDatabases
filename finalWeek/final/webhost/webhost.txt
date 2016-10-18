@@ -1,0 +1,43 @@
+— [Problem 2]
+
+customerAccount(_username_, email, webURL, openTime, subPrice, accountType)
+	*webURL is a candidate key
+
+servers(_hostname_, OSType, maxSites, serverType)
+
+packages(_name_, _version_, description, price)
+
+sharedServer(_hostname_)
+	*hostname is a foreign key to servers.hostname
+
+dedicatedServer(_hostname_)
+	*hostname is a foreign key to servers.hostname
+
+-Since each basic account must be associated with exactly one shared server, it makes
+-sense to combine the basicAccount entity set and the basicHosted relationship set.
+
+basicAccount(_username_, hostname)
+	*username is a foreign key to customerAccount.username
+	*hostname is a foreign key to sharedServer.hostname
+
+-Similarly, since each preferred account must be associated with exactly one dedicated
+-server, it makes sense to combine the preferredAccount entity set and the preferredHosted
+-relationship set.
+
+preferredAccount(_username_, hostname)
+	*username is a foreign key to customerAccount.username
+	*hostname is a foreign key to dedicatedServer.hostname)
+
+uses(_username_, _name_, _version_)
+	*username is a foreign key to customerAccount.username
+	*name is a foreign key to packages.name
+	*version is a foreign key to packages.version
+
+installed(_hostname_, _name_, _version_)
+	*hostname is a foreign key to servers.hostname
+	*name is a foreign key to packages.name
+	*version is a foreign key to packages.version
+
+
+
+

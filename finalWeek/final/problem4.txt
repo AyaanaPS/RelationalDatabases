@@ -1,0 +1,92 @@
+You can put your answers for Problem 4 in this file.  Follow this notation for
+writing your answers in text format:
+
+ * You can write functional dependencies as A -> B
+
+ * You can write a set of functional dependencies as { A -> BC, C -> D }
+
+ * You can write attribute-set closure as {A}+ etc.
+
+ * You can write multivalued dependencies as A ->> B
+
+ * When writing relation schemas, you can indicate primary-key attributes
+   by enclosing them with underscores, e.g. R1(_A_, B, C), R2(_C_, D)
+
+ * Don't forget that primary key attributes should always come first
+   when writing relation schemas
+
+-- [Problem 4a]
+
+Clearly, the tutor_id will imply the tutor_name, email and graduation_date of the
+tutor:
+tutor_id -> tutor_name, email, graduation_date
+
+The course_number will imply the course_name:
+course_number -> course_name
+
+There is a multivalued dependency between tutor_id and topic since every tutor_id can
+tutor in multiple topics.
+tutor_id ->> topic
+
+Furthermore, there is a multivalued dependency between tutor_id and the course number, since every tutor can tutor multiple courses.
+tutor_id ->> course_number
+
+There is another multivalued dependency between the course number and the topics,
+since every course_number can have multiple topics.
+course_number ->> topics
+
+-- [Problem 4b]
+
+The above design is not the best. The first schema (tutors) is okay since tutor_id is a superkey of tutors. The schema tutors should not be decomposed any further because the functional dependency that holds on the table has tutor_id on its left hand side, and that is the primary key of the table. Thus, there aren’t any redundancies.
+However, the second schema (tutor_topics) is lossy, since it requires extra
+tuples to represent multivalues. This is because every distinct value of every distinct multivalued attribute requires a separate tuple. Clearly, there is unnecessary redundancy
+that can be solved by some kind of decomposition.
+
+-- [Problem 4c]
+
+In the case of tutor_topics, neither BCNF or 3NF decompositions can be used to eliminate redundancy. A better schema can be arrived at by using 4NF decomposition. This design will eliminate all redundancies and preserve the functional dependencies. The design that it results in is lossless.
+
+The first schema can be left unchanged:
+
+tutors(_tutor_id_, tutor_name, email, graduation_date)
+	This schema is obviously in 4NF because it is also in BCNF:
+	All functional dependencies that hold on this table have tutor_id
+	on the LHS,  and tutor_id is the primary key of this relation
+	schema.
+
+The second schema can be decomposed into:
+
+tutor_course(tutor_id, course_number)
+	This is in 4NF form because the multivalued dependency
+	tutor_id ->> course_number, course_name is trivial
+	in this relation.
+	Candidate key is the entire relation.
+
+tutor_topics(tutor_id, topic)
+	This is in 4NF form because the multivalued dependency
+	tutor_id ->> topic is trivial in this relation.
+	Candidate key is the entire relation.
+
+course_topics(course_number, topic)
+	This is in 4NF form because the multivalued dependency
+	course_number, course_name ->> topic is trivial in this
+	relation.
+	Candidate key is the entire relation.
+
+courses(_course_number_, course_name)
+	This is in 4NF because it is also in BCNF:
+	All functional dependencies that hold have course_number
+	on the LHS, and course_number is the primary key of the table.
+
+-- [Problem 4d]
+
+SELECT tutor_name, email
+FROM tutors
+WHERE tutor_id IN
+	(SELECT tutor_id FROM tutor_course
+	WHERE course_number = ‘CS122’) OR
+	tutor_id IN
+	(SELECT tutor_id FROM tutor_topics
+	WHERE topic = ‘Java’);
+
+

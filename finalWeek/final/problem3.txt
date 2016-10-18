@@ -1,0 +1,101 @@
+You can put your answers for Problem 3 in this file.  Follow this notation for
+writing your answers in text format:
+
+ * You can write functional dependencies as A -> B
+
+ * You can write a set of functional dependencies as { A -> BC, C -> D }
+
+ * You can write attribute-set closure as {A}+ etc.
+
+ * You can write multivalued dependencies as A ->> B
+
+ * When writing relation schemas, you can indicate primary-key attributes
+   by enclosing them with underscores, e.g. R1(_A_, B, C), R2(_C_, D)
+
+ * Don't forget that primary key attributes should always come first
+   when writing relation schemas
+
+-- [Problem 3a]
+
+AI is a candidate key for the relation-schema R(A, B, C, G, H, I).
+
+We will first show that AI is a super key for the relation-schema:
+	AI: using A -> B and A -> G gives
+	ABGI: using BI -> C and AG -> H gives
+	ABCGHI
+
+We will now show that it is a candidate key (minimal super key) by computing
+the attribute-set closure of all proper subsets of it:
+	{A}+ = ABGH
+	{I}+ = I
+
+Since neither attribute set closure is R, AI is indeed a candidate key.
+
+
+-- [Problem 3b]
+
+Start with:
+
+	F_c = F = { A -> B, BI -> C, AG -> H, G -> BH, A -> G }
+
+Step 1: Collapse down dependencies using Union rule
+	
+	F_c = { A -> BG, BI -> C, AG -> H, G -> BH }
+
+Step 2: B is extraneous in A -> BG
+	
+	Proof: Take altered set:
+	F_c’ = { A -> G, BI -> C, AG -> H, G -> BH }
+	See if we can infer A -> B from F_c’. 
+		{A}+ = ABGH.
+	Since the result contains B, B is extraneous in
+	A -> BG
+
+	Thus, F_c = { A -> G, BI -> C, AG -> H, G -> BH }
+
+Step 3: G is not needed in AG -> H
+	
+	Proof: A implies G. Thus, this just needs to be
+	A -> H.
+
+	F_c = { A -> G, BI -> C, A -> H, G -> BH }
+
+Step 4: Union rule again
+
+	F_c = { A -> GH, BI -> C, G -> BH }
+
+Step 5: H is extraneous in A -> GH
+
+	Proof: Take altered set:
+	F_c’ = { A -> G, BI -> C, G -> BH }
+	See if we can infer A -> H from F_c’.
+		{A}+ = ABGH
+	Since the result contains H, H is extraneous in
+	A -> GH
+
+	Thus, F_c = { A -> G, BI -> C, G -> BH }
+
+
+The final result is F_c = { A -> G, BI -> C, G -> BH }
+
+
+-- [Problem 3c]
+
+We have already computed the cover of F: F_c = { A -> G, BI -> C, G -> BH }
+
+Just run through the dependencies in left-to-right order:
+
+	R1(_A_, G)
+	R2(_B_, _I_, C)
+	R3(_G_, B, H)
+
+For each dependency α -> β, (α ∪ β) isn’t contained within any previous schema Ri,
+so each dependency gets its own schema.
+
+From part a, we computed that AI -> R, so AI is a candidate key for R. Because AI is
+not contained within any of these generated relations, we must add a fourth schema:
+
+	R4(_A_, _I_)
+
+This is the complete 3NF decomposition of R.
+
