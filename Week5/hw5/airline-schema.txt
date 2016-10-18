@@ -1,0 +1,45 @@
+Write the relational model schema for your airline database in this file, using
+the notation we have used all term.  You can indicate primary key columns by
+enclosing the attribute names in _ characters.  Include descriptions of other
+candidate keys or foreign keys (if any) immediately under each relation schema.
+Example:
+
+foo(_a_, b, c)
+ * b is also a candidate key
+ * c is a foreign key to bar.c
+------------------------------------------------------------------------------
+
+-- [Problem 4]
+
+aircraft(_IATA_, model, manufacturer)
+
+flight(_flightNumber_, _flightDate_, flightTime, source, destination, domesticFlag, IATA)
+    * IATA is a foreign key to aircraft.IATA
+
+seat(_seatNumber_, _IATA_, class, type, exitFlag)
+    * IATA is a foreign key to aircraft.IATA
+
+customer(_customerID_, email, firstName, lastName)
+
+phoneNumbers(_customerID_, _phoneNumber_)
+    *customerID is a foreign key to customer.customerID
+
+traveler(_customerID_, passportNo, citizenship, contactName, contactPhone, frequentFlyerNo)
+    * customerID is a foreign key to customer.customerID
+
+purchaser(_customerID_, cardNo, expDate, securityCode)
+    * customerID is a foreign key to customer.customerID
+
+purchase(_purchaseID_, customerID, purchaseTime, confNo)
+    * customerID is a foreign key to purchaser.customerID
+
+ticket(_ticketID_, customerID, purchaseID, salePrice)
+    * purchaseID is a foreign key to purchase.puchaseID
+    * customerID is a foreign key to traveler.customerID
+
+buys(_flightNumber_, _flightDate_, _seatNumber_, _IATA_, ticketID)
+    * (flightNumber, flightDate) is a foreign key to (flight.flightNumber, flight.flightDate)
+    * (seatNumber, IATA) is a foreign key to (seat.seatNumber, seat.IATA)
+    * ticketID is a foreign key to ticket.ticketID
+    * ticketID is a candidate key
+
